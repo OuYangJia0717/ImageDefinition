@@ -1,0 +1,23 @@
+public double Calculate(Image<Gray, byte> img)
+        {
+            using (Image<Gray, byte> image = img.Clone())
+            {
+
+                Size imageSize = image.Size;
+
+                var xGradient = new Image<Gray, Int16>(imageSize);
+                var yGradient = new Image<Gray, Int16>(imageSize);
+                var xy = new Image<Gray, Int16>(imageSize);
+                CvInvoke.Sobel(image, xGradient, DepthType.Cv16S, 1, 0, 3);
+                CvInvoke.Sobel(image, yGradient, DepthType.Cv16S, 0, 1, 3);
+                CvInvoke.AbsDiff(xGradient, new ScalarArray(0), xGradient);
+                CvInvoke.AbsDiff(yGradient, new ScalarArray(0), yGradient);
+                CvInvoke.Add(xGradient, yGradient, xy);
+                var g = xy.GetAverage();
+
+                xGradient.Dispose();
+                yGradient.Dispose();
+                xy.Dispose();
+                return g.Intensity;
+            }
+        }
